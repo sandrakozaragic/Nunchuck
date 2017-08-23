@@ -4,6 +4,7 @@
 #include <linux/i2c.h>
 #include <linux/fs.h>
 #include <asm/uaccess.h>
+#include <linux/delay.h>
 
 #include "nunchuk.h"
 
@@ -36,11 +37,11 @@ static struct file_operations fops = {
 static int nunchuk_handshake(void)
 {
     char buffer[] = {0xF0, 0x55};
-    i2c_master_send(nunchuck_client, buffer, 2);
+    i2c_master_send(nunchuk_client, buffer, 2);
 	usleep(1);
 	buffer[0] = 0xFB;
 	buffer[1] = 0x00;
-	i2c_master_send(nunchuck_client, buffer,2);
+	i2c_master_send(nunchuk_client, buffer,2);
 	usleep(1);
     return RET_SUCCESS;
 }
@@ -49,9 +50,9 @@ static int nunchuk_read_registers(struct i2c_client *client, u8 *buf,
 								  int buf_size)
 {
 	char buffer[] = {0x00};
- 	i2c_master_send(nunchuck_client, buffer, 1);
+ 	i2c_master_send(nunchuk_client, buffer, 1);
 	msleep(10);
-	i2c_master_recv(nunchuck_client, buf, buf_size);
+	i2c_master_recv(nunchuk_client, buf, buf_size);
 	return RET_SUCCESS;
 }
 
@@ -129,7 +130,7 @@ static ssize_t nunchuk_read(struct file *filp, char *buffer, size_t length,
                            loff_t * offset)
 {
     char buffer_pomocni[6];
-    nunchuk_read_registers(filp, buffer_pomocni, sizeof(buffer_pomocni));
+    nunchuk_read_registers(nunchuk_client, buffer_pomocni, sizeof(buffer_pomocni));
     //put_user(buffer, buffer_pomocni);
     printk(KERN_INFO "X kordinata %d", buffer_pomocni[0]);
     printk(KERN_INFO "Y kordinata %d", buffer_pomocni[1]);
