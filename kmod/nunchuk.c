@@ -51,7 +51,7 @@ static int nunchuk_read_registers(struct i2c_client *client, u8 *buf,
 {
 	char buffer[] = {0x00};
  	i2c_master_send(nunchuk_client, buffer, 1);
-	msleep(10);
+	mdelay(10);
 	i2c_master_recv(nunchuk_client, buf, buf_size);
 	return RET_SUCCESS;
 }
