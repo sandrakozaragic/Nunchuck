@@ -130,31 +130,36 @@ static ssize_t nunchuk_read(struct file *filp, char *buffer, size_t length,
                            loff_t * offset)
 {
     char buffer_pomocni[6];
+    int k;
     nunchuk_read_registers(nunchuk_client, buffer_pomocni, sizeof(buffer_pomocni));
     //put_user(buffer, buffer_pomocni);
     printk(KERN_INFO "X kordinata %d", buffer_pomocni[0]);
     printk(KERN_INFO "Y kordinata %d", buffer_pomocni[1]);
     if(buffer_pomocni[5] & 0x01)
     {
+      k = 0;
       printk(KERN_INFO"Iskljucen Z button");
-      put_user(0x00, buffer+2);
+      put_user(k, buffer+2);
       
     }
     else
     {
+	k = 1;
 	printk(KERN_INFO"Pritisnut Z button");
-        put_user(0x01, buffer+2);
+        put_user(k, buffer+2);
     }
     
     if(buffer_pomocni[5] & 0x02)
     {
+      k = 0;
       printk(KERN_INFO"Iskljucen C button");
-      put_user(0x00, buffer+3);
+      put_user(k, buffer+3);
     }
     else
     {
+	k = 1;
 	printk(KERN_INFO"Pritisnut C button");
-        put_user(0x01, buffer+3);
+        put_user(k, buffer+3);
     }
 
     put_user(buffer_pomocni[0], buffer+0);
